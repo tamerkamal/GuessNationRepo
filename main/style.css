@@ -14,11 +14,15 @@ body{
     margin: 0;
 }
 
-#canvas{
-background: white;
-border-radius: 5px;
+#mainCanvas{
+    background: white;
+    border-radius: 5px;
 }
 
+#scoreCanvas{
+    background: black;
+    border-radius: 5px;
+}
 
 img{
     display: none;

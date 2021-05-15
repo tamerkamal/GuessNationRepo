@@ -1,9 +1,14 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const mainCanvas = document.getElementById('mainCanvas');
+const scoreCanvas = document.getElementById('scoreCanvas');
+const ctx = mainCanvas.getContext('2d');
 
 //#region set canvas dimensions
-canvas.width = 1000;
-canvas.height = 600;
+mainCanvas.width = 1000;
+mainCanvas.height = 600;
+
+scoreCanvas.width = 1000;
+scoreCanvas.height = 50;
+//#endregion
 
 //#region  nationalities
 const japanese = 'Japanese';
@@ -15,12 +20,10 @@ const thai = 'Thai';
 let boxes = [];
 let photos = [];
 
-let currentPhoto = new Image();
-
 let boxWidth = 150, boxHeight = 150;
 let boxPadding = 20;
 
-let currentX = canvas.width / 2;
+let currentX = mainCanvas.width / 2;
 let currentY = 0;
 
 let totalScore = 0;
@@ -47,35 +50,35 @@ function populateBoxesArray(boxes) {
 
     boxes.push({
         description: 'topRighttBox',
-        x: canvas.width - boxWidth,
+        x: mainCanvas.width - boxWidth,
         y: 0,
         width: boxWidth,
         height: boxHeight,
         nationality: chinese,
-        textXPostion: canvas.width - 100 - boxPadding,
+        textXPostion: mainCanvas.width - 100 - boxPadding,
         textYPosition: 4 * boxPadding
     });
 
     boxes.push({
         description: 'bottomLeftBox',
         x: 0,
-        y: canvas.height - boxWidth,
+        y: mainCanvas.height - boxWidth,
         width: boxWidth,
         height: boxHeight,
         nationality: korean,
         textXPostion: boxPadding,
-        textYPosition: canvas.height - 100 + boxPadding
+        textYPosition: mainCanvas.height - 100 + boxPadding
     });
 
     boxes.push({
         description: 'bottomRightBox',
-        x: canvas.width - boxWidth,
-        y: canvas.height - boxHeight,
+        x: mainCanvas.width - boxWidth,
+        y: mainCanvas.height - boxHeight,
         width: boxWidth,
         height: boxHeight,
         nationality: thai,
-        textXPostion: canvas.width - 100,
-        textYPosition: canvas.height - 100 + boxPadding
+        textXPostion: mainCanvas.width - 100,
+        textYPosition: mainCanvas.height - 100 + boxPadding
     });
 }
 
@@ -147,17 +150,17 @@ function drawPhotos() {
                 return;
             }
 
-            currentPhoto = new Image();
+            let currentPhoto = new Image();
 
             currentPhoto.src = photos[photoIndex].source;
 
-            ctx.clearRect(canvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
+            ctx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
 
             currentY += 1;
             //console.log('currentPhoto currentY', currentY);
-            ctx.drawImage(currentPhoto, canvas.width / 2 - currentPhoto.width / 2, currentY);
+            ctx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
 
-            if (currentY > canvas.height) {
+            if (currentY > mainCanvas.height) {
                 currentY = 0;
 
                 if (photoIndex < photos.length) {
@@ -172,8 +175,7 @@ function drawPhotos() {
 }
 
 //#region mouse events
-
-canvas.onmouseup = function (e) {
+mainCanvas.onmouseup = function (e) {
 
     if (!photos[photoIndex]) {
         return;
@@ -192,7 +194,7 @@ canvas.onmouseup = function (e) {
         }
         //console.log('mouse offsetY', e.offsetY);
     }
-    else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= canvas.height && e.offsetY >= canvas.height - boxHeight) {
+    else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
         console.log('chosen nationality: ', korean);
 
         if (photos[photoIndex].nationality == korean) {
@@ -202,7 +204,7 @@ canvas.onmouseup = function (e) {
             totalScore -= 5
         }
     }
-    else if (e.offsetX <= canvas.width && e.offsetX >= canvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
         console.log('chosen nationality: ', chinese);
 
         if (photos[photoIndex].nationality == chinese) {
@@ -212,7 +214,7 @@ canvas.onmouseup = function (e) {
             totalScore -= 5
         }
     }
-    else if (e.offsetX <= canvas.width && e.offsetX >= canvas.width - boxWidth && e.offsetY <= canvas.height && e.offsetY >= canvas.height - boxHeight) {
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
         console.log('chosen nationality: ', thai);
 
         if (photos[photoIndex].nationality == thai) {
@@ -227,9 +229,10 @@ canvas.onmouseup = function (e) {
 
     //if
 }
+//#endregion
 
 //function _MouseEvents() {
-    // canvas.onmousedown = function (e) {
+    // mainCanvas.onmousedown = function (e) {
 
     //     //debugger;
     //     //debugger;
@@ -249,7 +252,7 @@ canvas.onmouseup = function (e) {
     //         //currentY = mouseY;
     //     }
     // };
-    // canvas.onmousemove = function (e) {
+    // mainCanvas.onmousemove = function (e) {
 
     //     if (isDraggable) {
     //         currentX = e.pageX - this.offsetLeft;
@@ -264,7 +267,7 @@ canvas.onmouseup = function (e) {
     //     }
     // };
 
-    // canvas.onmouseout = function (e) {
+    // mainCanvas.onmouseout = function (e) {
     //     //isDraggable = false;
     // };
 //}
