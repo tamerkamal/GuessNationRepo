@@ -1,6 +1,8 @@
 const mainCanvas = document.getElementById('mainCanvas');
 const scoreCanvas = document.getElementById('scoreCanvas');
-const ctx = mainCanvas.getContext('2d');
+
+const mainCtx = mainCanvas.getContext('2d');
+const scoreCtx = scoreCanvas.getContext('2d');
 
 //#region set canvas dimensions
 mainCanvas.width = 1000;
@@ -32,6 +34,7 @@ window.onload = function () {
     populateBoxesArray(boxes);
     drawBoxes(boxes);
     fillBoxesWithText(boxes);
+    fillScoreText(totalScore);
     populatePhotosArray(photos);
     drawPhotos();
 }
@@ -119,20 +122,27 @@ function populatePhotosArray(photos) {
 
 function drawBoxes(boxes) {
     // rectangles background color;
-    ctx.fillStyle = 'yellow';
+    mainCtx.fillStyle = 'yellow';
 
     for (let i = 0; i < boxes.length; i++) {
-        ctx.fillRect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
+        mainCtx.fillRect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
     }
 }
 
 function fillBoxesWithText(boxes) {
 
-    ctx.font = '20px Arial';
+    mainCtx.font = '25px Arial';
 
     for (let i = 0; i < boxes.length; i++) {
-        ctx.strokeText(boxes[i].nationality, boxes[i].textXPostion, boxes[i].textYPosition);
+        mainCtx.strokeText(boxes[i].nationality, boxes[i].textXPostion, boxes[i].textYPosition);
     }
+}
+
+function fillScoreText(totalScore) {
+    scoreCtx.font = '25px Georgia';
+    scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
+    scoreCtx.fillStyle = "white";
+    scoreCtx.fillText('Total Score: ' + totalScore.toString(), scoreCanvas.width / 2 - 70, scoreCanvas.height / 2);
 }
 
 function drawPhotos() {
@@ -154,11 +164,11 @@ function drawPhotos() {
 
             currentPhoto.src = photos[photoIndex].source;
 
-            ctx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
+            mainCtx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
 
             currentY += 1;
             //console.log('currentPhoto currentY', currentY);
-            ctx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
+            mainCtx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
 
             if (currentY > mainCanvas.height) {
                 currentY = 0;
@@ -227,6 +237,7 @@ mainCanvas.onmouseup = function (e) {
 
     console.log('total score: ', totalScore);
 
+    fillScoreText(totalScore);
     //if
 }
 //#endregion
