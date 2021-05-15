@@ -24,7 +24,33 @@ body{
     border-radius: 5px;
 }
 
-img{
-    display: none;
+.modal-dialog {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: auto;
+}
+@media(max-width: 768px) {
+  .modal-dialog {
+    min-height: calc(100vh - 20px);
+  }
+}
+
+p{
+    color: crimson;
+     text-align: center;
+     font-weight: bold;
+}
+
+h5{
+    color:blue;
+     text-align: center;
+     font-weight: bold;
+     margin-left: 35%;
+}
+
+button{
+    margin: auto;
 }
 

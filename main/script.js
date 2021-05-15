@@ -1,23 +1,30 @@
+//#region constants
+
 const mainCanvas = document.getElementById('mainCanvas');
 const scoreCanvas = document.getElementById('scoreCanvas');
 
 const mainCtx = mainCanvas.getContext('2d');
 const scoreCtx = scoreCanvas.getContext('2d');
 
+// nationalities
+const japanese = 'Japanese';
+const chinese = 'Chinese';
+const korean = 'Korean';
+const thai = 'Thai';
+
+//#endregion
+
 //#region set canvas dimensions
+
 mainCanvas.width = 1000;
 mainCanvas.height = 600;
 
 scoreCanvas.width = 1000;
 scoreCanvas.height = 50;
+
 //#endregion
 
-//#region  nationalities
-const japanese = 'Japanese';
-const chinese = 'Chinese';
-const korean = 'Korean';
-const thai = 'Thai';
-//#endregion
+//#region declarations and initialization
 
 let boxes = [];
 let photos = [];
@@ -29,15 +36,157 @@ let currentX = mainCanvas.width / 2;
 let currentY = 0;
 
 let totalScore = 0;
+let timeInterval = 3;
+
+//#endregion
+
+//#region main methods
 
 window.onload = function () {
-    populateBoxesArray(boxes);
-    drawBoxes(boxes);
+    $('#infoModal').modal('show');
+
+    $('#infoModal').on('hidden.bs.modal', function () {
+        populateBoxesArray(boxes);
+        drawBoxes(boxes);
+        // fillBoxesWithText(boxes);
+        fillScoreText(totalScore);
+        populatePhotosArray(photos);
+        drawPhotos();
+    });
+}
+
+function drawBoxes(boxes) {
+    // rectangles background color;
+    mainCtx.fillStyle = 'yellow';
+
+    for (let i = 0; i < boxes.length; i++) {
+        mainCtx.fillRect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
+    }
     fillBoxesWithText(boxes);
-    fillScoreText(totalScore);
+}
+
+function drawPhotos() {
+
+    if (photos.length > 0 == false) {
+        return;
+    }
+
+    photoIndex = 0;
+
+    let interval = setInterval(function () {
+
+        return function () {
+
+            if (photoIndex >= photos.length) {
+                return;
+            }
+
+            let currentPhoto = new Image();
+
+            currentPhoto.src = photos[photoIndex].source;
+
+            mainCtx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
+
+            currentY += 1;
+            //console.log('currentPhoto currentY', currentY);
+            mainCtx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
+
+            if (currentY > mainCanvas.height) {
+                currentY = 0;
+
+                if (photoIndex == photos.length - 1) {
+                    //debugger;
+                    clearPhotos();
+
+                    document.getElementById("finalScore").textContent = "Your final score is " + totalScore.toString() + ", do you want to play again ?";
+
+                    // $("#finalScore").text() = "fdfdfdf"
+
+                    $('#resultModal').modal('show');
+                }
+
+                else if (photoIndex < photos.length) {
+                    //debugger;
+                    photoIndex++;
+                }
+            }
+        };
+    }(), timeInterval);
+}
+
+function fillScoreText(totalScore) {
+    clearScoreText();
+    scoreCtx.font = '25px Georgia';
+    scoreCtx.fillStyle = "white";
+    scoreCtx.fillText('Total Score: ' + totalScore.toString(), scoreCanvas.width / 2 - 70, scoreCanvas.height / 2);
+}
+
+function playAgain() {
+    $('#resultModal').modal('hide');
+    clearPhotos();
+    clearScoreText();
     populatePhotosArray(photos);
+    fillScoreText(0);
+    timeInterval *= 10;
     drawPhotos();
 }
+
+//#endregion
+
+//#region events
+
+mainCanvas.onmouseup = function (e) {
+
+    if (photos.length > 0 == false || !photos[photoIndex]) { return; }
+
+    console.log('current Photo nationality: ', photos[photoIndex].nationality);
+
+    if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+        console.log('chosen nationality', japanese);
+
+        if (photos[photoIndex].nationality == japanese) {
+            totalScore += 20;
+        }
+        else {
+            totalScore -= 5
+        }
+    }
+    else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+        console.log('chosen nationality: ', korean);
+
+        if (photos[photoIndex].nationality == korean) {
+            totalScore += 20;
+        }
+        else {
+            totalScore -= 5
+        }
+    }
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+        console.log('chosen nationality: ', chinese);
+
+        if (photos[photoIndex].nationality == chinese) {
+            totalScore += 20;
+        }
+        else {
+            totalScore -= 5
+        }
+    }
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+        console.log('chosen nationality: ', thai);
+
+        if (photos[photoIndex].nationality == thai) {
+            totalScore += 20;
+        }
+        else {
+            totalScore -= 5
+        }
+    }
+    console.log('total score: ', totalScore);
+    fillScoreText(totalScore);
+}
+//#endregion
+
+//#region helper methods
 
 function populateBoxesArray(boxes) {
     boxes.push({
@@ -87,16 +236,16 @@ function populateBoxesArray(boxes) {
 
 function populatePhotosArray(photos) {
     photos.push({
-        nationality: korean,
-        source: '../assets/photos/korean_1.jpg'
-    });
-    photos.push({
         nationality: japanese,
         source: '../assets/photos/japanese_1.jpg'
     });
     photos.push({
         nationality: korean,
         source: '../assets/photos/korean_2.jpg'
+    });
+    photos.push({
+        nationality: korean,
+        source: '../assets/photos/korean_1.jpg'
     });
     photos.push({
         nationality: japanese,
@@ -110,6 +259,15 @@ function populatePhotosArray(photos) {
         nationality: chinese,
         source: '../assets/photos/chinese_2.jpg'
     });
+    photos.push({
+        nationality: japanese,
+        source: '../assets/photos/japanese_4.jpg'
+    });
+    photos.push({
+        nationality: korean,
+        source: '../assets/photos/korean_4.jpg'
+    });
+
     photos.push({
         nationality: chinese,
         source: '../assets/photos/chinese_1.jpg'
@@ -132,15 +290,6 @@ function populatePhotosArray(photos) {
     });
 }
 
-function drawBoxes(boxes) {
-    // rectangles background color;
-    mainCtx.fillStyle = 'yellow';
-
-    for (let i = 0; i < boxes.length; i++) {
-        mainCtx.fillRect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
-    }
-}
-
 function fillBoxesWithText(boxes) {
 
     mainCtx.font = '25px Arial';
@@ -150,162 +299,12 @@ function fillBoxesWithText(boxes) {
     }
 }
 
-function fillScoreText(totalScore) {
-    clearScoreText();
-    scoreCtx.font = '25px Georgia';
-    scoreCtx.fillStyle = "white";
-    scoreCtx.fillText('Total Score: ' + totalScore.toString(), scoreCanvas.width / 2 - 70, scoreCanvas.height / 2);
-}
-
 function clearScoreText() {
     scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-}
-
-function drawPhotos() {
-
-    if (photos.length > 0 == false) {
-        return;
-    }
-
-    photoIndex = 0;
-
-    let timeInterval = 3;
-
-    interval = setInterval(function () {
-
-        return function () {
-
-            if (photoIndex >= photos.length) {
-                return;
-            }
-
-            let currentPhoto = new Image();
-
-            currentPhoto.src = photos[photoIndex].source;
-
-            mainCtx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
-
-            currentY += 1;
-            //console.log('currentPhoto currentY', currentY);
-            mainCtx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
-
-            if (currentY > mainCanvas.height) {
-                currentY = 0;
-
-                if (photoIndex < photos.length) {
-                    //debugger;
-                    photoIndex++;
-                }
-            }
-
-        };
-    }(), timeInterval);
 }
 
 function clearPhotos() {
     photos = [];
 }
 
-//#region mouse events
-mainCanvas.onmouseup = function (e) {
-
-    if (photos.length > 0 == false || !photos[photoIndex]) {
-        return;
-    }
-
-    console.log('current Photo nationality: ', photos[photoIndex].nationality);
-
-    if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
-        console.log('chosen nationality', japanese);
-
-        if (photos[photoIndex].nationality == japanese) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
-        //console.log('mouse offsetY', e.offsetY);
-    }
-    else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
-        console.log('chosen nationality: ', korean);
-
-        if (photos[photoIndex].nationality == korean) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
-    }
-    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
-        console.log('chosen nationality: ', chinese);
-
-        if (photos[photoIndex].nationality == chinese) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
-    }
-    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
-        console.log('chosen nationality: ', thai);
-
-        if (photos[photoIndex].nationality == thai) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
-    }
-
-    console.log('total score: ', totalScore);
-
-    fillScoreText(totalScore);
-    //if
-}
 //#endregion
-
-//function _MouseEvents() {
-    // mainCanvas.onmousedown = function (e) {
-
-    //     //debugger;
-    //     //debugger;
-
-    //     var mouseX = e.pageX - this.offsetLeft;
-    //     var mouseY = e.pageY - this.offsetTop;
-
-
-    //     if (mouseX >= (currentX - currentPhoto.width) &&
-    //         mouseX <= (currentX + currentPhoto.width) &&
-    //         mouseY >= (currentY - currentPhoto.height) &&
-    //         mouseY <= (currentY + currentPhoto.height)) {
-    //         isDraggable = true;
-
-
-    //         //currentX = mouseX;
-    //         //currentY = mouseY;
-    //     }
-    // };
-    // mainCanvas.onmousemove = function (e) {
-
-    //     if (isDraggable) {
-    //         currentX = e.pageX - this.offsetLeft;
-    //         currentY = e.pageY - this.offsetTop;
-
-
-
-    //        // drawPhotos();
-
-    //         //console.log('currentX', currentX)
-    //         //console.log('currentY', currentX)
-    //     }
-    // };
-
-    // mainCanvas.onmouseout = function (e) {
-    //     //isDraggable = false;
-    // };
-//}
-
-
-
-
-
