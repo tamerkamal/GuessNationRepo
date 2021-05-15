@@ -139,10 +139,14 @@ function fillBoxesWithText(boxes) {
 }
 
 function fillScoreText(totalScore) {
+    clearScoreText();
     scoreCtx.font = '25px Georgia';
-    scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
     scoreCtx.fillStyle = "white";
     scoreCtx.fillText('Total Score: ' + totalScore.toString(), scoreCanvas.width / 2 - 70, scoreCanvas.height / 2);
+}
+
+function clearScoreText() {
+    scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
 }
 
 function drawPhotos() {
