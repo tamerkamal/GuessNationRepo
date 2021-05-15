@@ -7,42 +7,29 @@ const ctx = canvas.getContext('2d');
 
 canvas.width = 1000;
 canvas.height = 600;
-
-debugger;
-
-// get Bounding Client Rect
-// var BB = canvas.getBoundingClientRect();
-// var offsetX = BB.left;
-// var offsetY = BB.top;
-// var WIDTH = canvas.width;
-// var HEIGHT = canvas.height;
-
-// // drag related variables
-// var dragok = false;
-// var startX;
-// var startY;
-//#endregion
+//debugger;
 
 //#endregion
 
 //#region draw on canvas
-let img = new Image();
+let photo = new Image();
 let isDraggable = false;
 
 let currentX = canvas.width / 2;
 let currentY = 0;
 
-//let currentY = 0;
-
-// box style
-ctx.fillStyle = 'blue';
-
-//#region fillRect (x-axis,currentY-axis,boxWidth,boxHeight)
-
-let boxWidth = 150, boxHeight = 150;
+window.onload = function () {
+    drawBoxes();
+    fillBoxesWithText();
+    drawPhoto(0);
+}
 
 function drawBoxes() {
 
+    let boxWidth = 150, boxHeight = 150;
+
+    // rectangles background color;
+    ctx.fillStyle = 'yellow';
     // top-left corner box
     ctx.fillRect(0, 0, boxWidth, boxHeight);
     // top-right corner box
@@ -53,7 +40,6 @@ function drawBoxes() {
     ctx.fillRect(canvas.width - 150, canvas.height - 150, boxWidth, boxHeight);
 }
 
-drawBoxes();
 
 //#endregion
 
@@ -72,34 +58,30 @@ function fillBoxesWithText() {
     ctx.strokeText('Thai', canvas.width - 100, canvas.height - 100);
 }
 
-fillBoxesWithText();
-
-//#endregion
-
-//#region  photo
-
 function drawPhoto(currentY) {
 
-    img = new Image();
+    photo = new Image();
 
-    img.src = '../assets/photos/mountain1.jpg';
+    photo.src = '../assets/photos/mountain1.jpg';
 
-    ctx.drawImage(img, canvas.width / 2 - img.width / 2, currentY);
-    ctx.clearRect(canvas.width / 2 - img.width / 2, 0, img.width - 20, img.height);
-    //img.onload = animate(img); //load image
+    ctx.drawImage(photo, canvas.width / 2 - photo.width / 2, currentY);
+    ctx.clearRect(canvas.width / 2 - photo.width / 2, 0, photo.width - 20, photo.height);
+    //photo.onload = animate(photo); //load image
 
-    img.addEventListener('load', function () {
+    photo.addEventListener('load', function () {
+
+        _MouseEvents();
 
         let timeInterval = 20; //todo change it to 7 
 
         interval = setInterval(function () {
 
             return function () {
-                ctx.clearRect(canvas.width / 2 - img.width / 2, currentY, img.width, img.height);
+                ctx.clearRect(canvas.width / 2 - photo.width / 2, currentY, photo.width, photo.height);
 
                 currentY += 1;
 
-                ctx.drawImage(img, canvas.width / 2 - img.width / 2, currentY);
+                ctx.drawImage(photo, canvas.width / 2 - photo.width / 2, currentY);
 
                 if (currentY > canvas.height) {
                     currentY = 0;
@@ -107,45 +89,44 @@ function drawPhoto(currentY) {
             };
         }(), timeInterval);
     });
-
 }
-
-drawPhoto(0);
 
 //#region mouse events
 
-// canvas.onmousedown = function (e) {
-//     debugger;
-//     clearInterval(interval);
+function _MouseEvents() {
+    canvas.onmousedown = function (e) {
 
-//     var mouseX = e.pageX - this.offsetLeft;
-//     var mouseY = e.pageY - this.offsetTop;
+        debugger;
 
-//     // currentY = img.getAbsolutePosition().y;
+        var mouseX = e.pageX - this.offsetLeft;
+        var mouseY = e.pageY - this.offsetTop;
 
-//     if (mouseX >= (currentX - img.width / 2) &&
-//         mouseX <= (currentX + img.width / 2) &&
-//         mouseY >= (currentY - img.height / 2) &&
-//         mouseY <= (currentY + img.height / 2)) {
-//         isDraggable = true;
-//     }
-// };
 
-// canvas.onmouseup = function (e) {
-//     isDraggable = false;
-// };
+        if (mouseX >= (currentX - photo.width / 2) &&
+            mouseX <= (currentX + photo.width / 2) &&
+            mouseY >= (currentY - photo.height / 2) &&
+            mouseY <= (currentY + photo.height / 2)) {
+            isDraggable = true;
+            //currentX = mouseX;
+            //currentY = mouseY;
+        }
+    };
+    canvas.onmousemove = function (e) {
 
-// canvas.onmouseout = function (e) {
-//     isDraggable = false;
-// };
+        if (isDraggable) {
+            currentX = e.pageX - this.offsetLeft;
+            currentY = e.pageY - this.offsetTop;
+        }
+    };
+    canvas.onmouseup = function (e) {
+        isDraggable = false;
+    };
+    canvas.onmouseout = function (e) {
+        isDraggable = false;
+    };
+}
 
-// canvas.onmousemove = function (e) {
-//     if (isDraggable) {
-//         currentX = e.pageX - this.offsetLeft;
-//         currentY = e.pageY - this.offsetTop;
-//     }
-// };
 
-//#endregion
+
 
 //#endregion
