@@ -118,6 +118,18 @@ function populatePhotosArray(photos) {
         nationality: thai,
         source: '../assets/photos/thai_2.jpg'
     });
+    photos.push({
+        nationality: thai,
+        source: '../assets/photos/thai_3.jpg'
+    });
+    photos.push({
+        nationality: japanese,
+        source: '../assets/photos/japanese_3.jpg'
+    });
+    photos.push({
+        nationality: korean,
+        source: '../assets/photos/korean_3.jpg'
+    });
 }
 
 function drawBoxes(boxes) {
@@ -151,7 +163,10 @@ function clearScoreText() {
 
 function drawPhotos() {
 
-    // currentPhoto.addEventListener('load', function () {
+    if (photos.length > 0 == false) {
+        return;
+    }
+
     photoIndex = 0;
 
     let timeInterval = 3;
@@ -185,13 +200,16 @@ function drawPhotos() {
 
         };
     }(), timeInterval);
-    //});
+}
+
+function clearPhotos() {
+    photos = [];
 }
 
 //#region mouse events
 mainCanvas.onmouseup = function (e) {
 
-    if (!photos[photoIndex]) {
+    if (photos.length > 0 == false || !photos[photoIndex]) {
         return;
     }
 
