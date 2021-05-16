@@ -38,6 +38,8 @@ let currentY = 0;
 let totalScore = 0;
 let timeInterval = 3;
 
+let countClicks = 0;
+
 //#endregion
 
 //#region main methods
@@ -67,6 +69,8 @@ function drawBoxes(boxes) {
 
 function drawPhotos() {
 
+    countClicks = 0;
+
     if (photos.length > 0 == false) {
         return;
     }
@@ -81,17 +85,20 @@ function drawPhotos() {
                 return;
             }
 
-            let currentPhoto = new Image();
+            let currentImage = new Image();
 
-            currentPhoto.src = photos[photoIndex].source;
+            currentImage.src = photos[photoIndex].source;
 
-            mainCtx.clearRect(mainCanvas.width / 2 - currentPhoto.width / 2, currentY, currentPhoto.width, currentPhoto.height);
+            mainCtx.clearRect(mainCanvas.width / 2 - currentImage.width / 2, currentY, currentImage.width, currentImage.height);
 
             currentY += 1;
-            //console.log('currentPhoto currentY', currentY);
-            mainCtx.drawImage(currentPhoto, mainCanvas.width / 2 - currentPhoto.width / 2, currentY);
+
+            mainCtx.drawImage(currentImage, mainCanvas.width / 2 - currentImage.width / 2, currentY);
 
             if (currentY > mainCanvas.height) {
+
+                resetMouseClicks();
+
                 currentY = 0;
 
                 if (photoIndex == photos.length - 1) {
@@ -99,8 +106,6 @@ function drawPhotos() {
                     clearPhotos();
 
                     document.getElementById("finalScore").textContent = "Your final score is " + totalScore.toString() + ", do you want to play again ?";
-
-                    // $("#finalScore").text() = "fdfdfdf"
 
                     $('#resultModal').modal('show');
                 }
@@ -129,6 +134,7 @@ function playAgain() {
     fillScoreText(0);
     timeInterval *= 10;
     drawPhotos();
+    resetMouseClicks();
 }
 
 //#endregion
@@ -142,6 +148,13 @@ mainCanvas.onmouseup = function (e) {
     console.log('current Photo nationality: ', photos[photoIndex].nationality);
 
     if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+
+        if (countClicks > 0) {
+            return;
+        }
+
+        countClicks++;
+
         console.log('chosen nationality', japanese);
 
         if (photos[photoIndex].nationality == japanese) {
@@ -152,6 +165,13 @@ mainCanvas.onmouseup = function (e) {
         }
     }
     else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+
+        if (countClicks > 0) {
+            return;
+        }
+
+        countClicks++;
+
         console.log('chosen nationality: ', korean);
 
         if (photos[photoIndex].nationality == korean) {
@@ -162,6 +182,13 @@ mainCanvas.onmouseup = function (e) {
         }
     }
     else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+
+        if (countClicks > 0) {
+            return;
+        }
+
+        countClicks++;
+
         console.log('chosen nationality: ', chinese);
 
         if (photos[photoIndex].nationality == chinese) {
@@ -172,6 +199,13 @@ mainCanvas.onmouseup = function (e) {
         }
     }
     else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+
+        if (countClicks > 0) {
+            return;
+        }
+
+        countClicks++;
+
         console.log('chosen nationality: ', thai);
 
         if (photos[photoIndex].nationality == thai) {
@@ -305,6 +339,11 @@ function clearScoreText() {
 
 function clearPhotos() {
     photos = [];
+    resetMouseClicks();
+}
+
+function resetMouseClicks() {
+    countClicks = 0;
 }
 
 //#endregion
