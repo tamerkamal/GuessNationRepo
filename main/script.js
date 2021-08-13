@@ -44,7 +44,7 @@ let countClicks = 0;
 
 //#region main methods
 
-window.onload = function () {
+window.onload = () => {
     $('#infoModal').modal('show');
 
     $('#infoModal').on('hidden.bs.modal', function () {
@@ -57,7 +57,7 @@ window.onload = function () {
     });
 }
 
-function drawBoxes(boxes) {
+const drawBoxes = (boxes) => {
     // rectangles background color;
     mainCtx.fillStyle = 'yellow';
 
@@ -67,7 +67,7 @@ function drawBoxes(boxes) {
     fillBoxesWithText(boxes);
 }
 
-function drawPhotos() {
+const drawPhotos = () => {
 
     countClicks = 0;
 
@@ -119,14 +119,14 @@ function drawPhotos() {
     }(), timeInterval);
 }
 
-function fillScoreText(totalScore) {
+const fillScoreText = (totalScore) => {
     clearScoreText();
     scoreCtx.font = '25px Georgia';
     scoreCtx.fillStyle = "white";
     scoreCtx.fillText('Total Score: ' + totalScore.toString(), scoreCanvas.width / 2 - 70, scoreCanvas.height / 2);
 }
 
-function playAgain() {
+const playAgain = () => {
     $('#resultModal').modal('hide');
     clearPhotos();
     clearScoreText();
@@ -141,88 +141,36 @@ function playAgain() {
 
 //#region events
 
-mainCanvas.onmouseup = function (e) {
+mainCanvas.onmouseup = (e) => {
 
-    if (photos.length > 0 == false || !photos[photoIndex]) { return; }
+    const selectedNation = getClickedOnBoxNation(e);
 
-    console.log('current Photo nationality: ', photos[photoIndex].nationality);
-
-    if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
-
-        if (countClicks > 0) {
-            return;
-        }
-
-        countClicks++;
-
-        console.log('chosen nationality', japanese);
-
-        if (photos[photoIndex].nationality == japanese) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
+    if (photos.length > 0 == false || !photos[photoIndex] || !selectedNation) {
+        return;
     }
-    else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
 
-        if (countClicks > 0) {
-            return;
-        }
-
-        countClicks++;
-
-        console.log('chosen nationality: ', korean);
-
-        if (photos[photoIndex].nationality == korean) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
+    // negelect multiple clicks if photo not changed yet
+    if (countClicks > 0) {
+        return;
     }
-    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
 
-        if (countClicks > 0) {
-            return;
-        }
+    countClicks++;
 
-        countClicks++;
+    //console.log('chosen nationality', selectedNation);
+    //console.log('current Photo nationality: ', photos[photoIndex].nationality);
 
-        console.log('chosen nationality: ', chinese);
-
-        if (photos[photoIndex].nationality == chinese) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
+    if (photos[photoIndex].nationality == selectedNation) {
+        incrementTotalScore();
     }
-    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
-
-        if (countClicks > 0) {
-            return;
-        }
-
-        countClicks++;
-
-        console.log('chosen nationality: ', thai);
-
-        if (photos[photoIndex].nationality == thai) {
-            totalScore += 20;
-        }
-        else {
-            totalScore -= 5
-        }
+    else {
+        decrementTotalScore();
     }
-    console.log('total score: ', totalScore);
-    fillScoreText(totalScore);
 }
 //#endregion
 
 //#region helper methods
 
-function populateBoxesArray(boxes) {
+const populateBoxesArray = (boxes) => {
     boxes.push({
         description: 'topLeftBox',
         x: 0,
@@ -268,7 +216,7 @@ function populateBoxesArray(boxes) {
     });
 }
 
-function populatePhotosArray(photos) {
+const populatePhotosArray = (photos) => {
     photos.push({
         nationality: japanese,
         source: '../assets/photos/japanese_1.jpg'
@@ -324,7 +272,7 @@ function populatePhotosArray(photos) {
     });
 }
 
-function fillBoxesWithText(boxes) {
+const fillBoxesWithText = (boxes) => {
 
     mainCtx.font = '25px Arial';
 
@@ -333,17 +281,45 @@ function fillBoxesWithText(boxes) {
     }
 }
 
-function clearScoreText() {
+const clearScoreText = () => {
     scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
 }
 
-function clearPhotos() {
+const clearPhotos = () => {
     photos = [];
     resetMouseClicks();
 }
 
-function resetMouseClicks() {
+const resetMouseClicks = () => {
     countClicks = 0;
+}
+
+const getClickedOnBoxNation = (e) => {
+    if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+        return japanese;
+    } else if (e.offsetX >= 0 && e.offsetX <= boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+        return korean;
+    }
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY >= 0 && e.offsetY <= boxHeight) {
+        return chinese;
+    }
+    else if (e.offsetX <= mainCanvas.width && e.offsetX >= mainCanvas.width - boxWidth && e.offsetY <= mainCanvas.height && e.offsetY >= mainCanvas.height - boxHeight) {
+        return thai;
+    }
+
+    return null;
+}
+
+const incrementTotalScore = (incremntBy = 20) => {
+    totalScore += incremntBy;
+    //console.log('total score: ', totalScore);
+    fillScoreText(totalScore);
+}
+
+const decrementTotalScore = (decrementBy = 5) => {
+    totalScore -= decrementBy;
+    //console.log('total score: ', totalScore);
+    fillScoreText(totalScore);
 }
 
 //#endregion
